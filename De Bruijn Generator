@@ -71,46 +71,6 @@ def deBruijn(deck):
             return deBruijn
     return deBruijn
 
-
-# From Cameron Morland
-def moveall(src, margin):
-    '''Return a list containing all the cards in src,
-    maintaining their order to some degree, but also
-    enforcing the constraint that there are always margin cards
-    between cards of equal value.'''
-    q = Queue(len(src))
-    for card in src: q.put(card)
-
-    d = []
-
-    while len(d) < 2*margin:
-        newval = q.get()
-        if newval in d:
-            q.put(newval)    # already there; put back.
-        else:
-            d.append(newval)
-
-    while not q.empty():
-        newval = q.get()
-
-        success = False
-        for i in range(len(d) - 2*margin + 1):
-            # Stupid O(n*k) code. Fix if you need large n*k.
-            # This is fine for any physical deck.
-            if not newval in d[i:i+2*margin]:
-                d.insert(i + margin, newval)
-                success = True
-                break
-
-        if not success:
-            q.put(newval) # value doesn't fit yet; put back to try later.
-
-    return d
-#
-#print(moveall(shuffled_deck,5));
-#print("This deck has a tie: " + str(Tie(shuffled_deck)));
-#print("This deck is deBruijn: " + str(deBruijn(shuffled_deck)) + "\n");
-
 def generate_partial():
     """generate_partial function will generate a De Bruijn Sequence with length 39 (3 suits)"""
     for i in range(10**7):
@@ -168,6 +128,11 @@ for deck in deck_list:
 #print ((deBruijn(potential)))
 #print (LMHCoding(potential))
 
+"""
+-------------------------------------------------------------------------------------------------------------
+The following serve the purpose of given any random deck of cards, the program will fix all Ties that exist and return a deck with NoTie.
+-------------------------------------------------------------------------------------------------------------
+"""
 
 def check_valid(deck, card):
     checking_list = []
