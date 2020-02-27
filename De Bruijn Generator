@@ -2,9 +2,11 @@
 
 import string
 import random
+import sys
+#test_deck = list(range(1,14)) + list(range(1,14))+ list(range(1,14))+ list(range(1,14));
+test_deck = 4*list(range(1,14))
 
-test_deck = 3*list(range(1,14))
-
+#test_deck = [range(1,13) for _ in range(4)];
 shuffled_deck = random.sample(test_deck, len(test_deck))
 
 window_length=5
@@ -69,6 +71,46 @@ def deBruijn(deck):
             return deBruijn
     return deBruijn
 
+
+# From Cameron Morland
+def moveall(src, margin):
+    '''Return a list containing all the cards in src,
+    maintaining their order to some degree, but also
+    enforcing the constraint that there are always margin cards
+    between cards of equal value.'''
+    q = Queue(len(src))
+    for card in src: q.put(card)
+
+    d = []
+
+    while len(d) < 2*margin:
+        newval = q.get()
+        if newval in d:
+            q.put(newval)    # already there; put back.
+        else:
+            d.append(newval)
+
+    while not q.empty():
+        newval = q.get()
+
+        success = False
+        for i in range(len(d) - 2*margin + 1):
+            # Stupid O(n*k) code. Fix if you need large n*k.
+            # This is fine for any physical deck.
+            if not newval in d[i:i+2*margin]:
+                d.insert(i + margin, newval)
+                success = True
+                break
+
+        if not success:
+            q.put(newval) # value doesn't fit yet; put back to try later.
+
+    return d
+#
+#print(moveall(shuffled_deck,5));
+#print("This deck has a tie: " + str(Tie(shuffled_deck)));
+#print("This deck is deBruijn: " + str(deBruijn(shuffled_deck)) + "\n");
+
 def generate_partial():
     """generate_partial function will generate a De Bruijn Sequence with length 39 (3 suits)"""
     for i in range(10**7):
@@ -100,17 +142,100 @@ def insert_card(partial_deck, left_over):
         print (copy_deck)
         print (len(copy_deck))
 
+"""
 shuffled_leftover = random.sample(left_over, len(left_over))
-insert_card(partial_deck, shuffled_leftover)
+insert_card(partial_deck, shuffled_leftover)"""
 
-#This function is a bit buggy, sometimes it might yield list.remove(x): x not in list.
+#This function is a big buggy, sometimes it might yield list.remove(x): x not in list.
 #However, it is still yielding De Bruijn sequence with length 52, which is what we want
 #So far, I have generated these proper sequence:
-gooddeck1 = [13, 8, 12, 10, 11, 2, 5, 9, 1, 8, 10, 4, 3, 2, 7, 1, 11, 6, 4, 10, 3, 7, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9]
-gooddeck2 = [11, 13, 2, 1, 8, 10, 4, 3, 2, 7, 1, 11, 10, 3, 5, 12, 9, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 12, 4, 5, 2, 7, 13, 12, 5, 6, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 5, 7, 10, 8, 9]
-gooddeck3 = [4, 12, 2, 6, 13, 3, 11, 8, 9, 10, 5, 4, 2, 7, 1, 11, 10, 3, 5, 12, 8, 10, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 8, 13, 12, 5, 1, 4, 3, 2, 9, 11, 7, 13, 8, 6, 12, 1, 9]
-gooddeck4 = [1, 4, 13, 2, 10, 5, 7, 11, 6, 12, 3, 8, 10, 4, 2, 7, 1, 11, 10, 3, 5, 12, 9, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 8, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9]
-gooddeck5 = [6, 7, 13, 9, 4, 5, 12, 2, 11, 1, 3, 8, 10, 4, 2, 7, 1, 11, 10, 3, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 10, 12, 8, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9]
-gooddeck6 = [10, 8, 2, 1, 13, 5, 6, 9, 12, 8, 10, 4, 3, 2, 7, 1, 11, 4, 10, 3, 7, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 11, 9]
-gooddeck7 = [1, 12, 2, 10, 4, 8, 11, 5, 9, 6, 13, 8, 10, 4, 3, 2, 7, 1, 11, 10, 3, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 7, 13, 8, 6, 12, 9]
-gooddeck8 = [13, 5, 2, 8, 12, 7, 4, 6, 10, 1, 9, 3, 11, 8, 10, 4, 2, 7, 1, 11, 10, 3, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9]
+deck_list = [
+[13, 8, 12, 10, 11, 2, 5, 9, 1, 8, 10, 4, 3, 2, 7, 1, 11, 6, 4, 10, 3, 7, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9],
+[11, 13, 2, 1, 8, 10, 4, 3, 2, 7, 1, 11, 10, 3, 5, 12, 9, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 12, 4, 5, 2, 7, 13, 12, 5, 6, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 5, 7, 10, 8, 9],
+[4, 12, 2, 6, 13, 3, 11, 8, 9, 10, 5, 4, 2, 7, 1, 11, 10, 3, 5, 12, 8, 10, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 8, 13, 12, 5, 1, 4, 3, 2, 9, 11, 7, 13, 8, 6, 12, 1, 9],
+[1, 4, 13, 2, 10, 5, 7, 11, 6, 12, 3, 8, 10, 4, 2, 7, 1, 11, 10, 3, 5, 12, 9, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 8, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9],
+[6, 7, 13, 9, 4, 5, 12, 2, 11, 1, 3, 8, 10, 4, 2, 7, 1, 11, 10, 3, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 10, 12, 8, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9],
+[10, 8, 2, 1, 13, 5, 6, 9, 12, 8, 10, 4, 3, 2, 7, 1, 11, 4, 10, 3, 7, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 11, 9],
+[1, 12, 2, 10, 4, 8, 11, 5, 9, 6, 13, 8, 10, 4, 3, 2, 7, 1, 11, 10, 3, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 7, 13, 8, 6, 12, 9],
+[13, 5, 2, 8, 12, 7, 4, 6, 10, 1, 9, 3, 11, 8, 10, 4, 2, 7, 1, 11, 10, 3, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 9, 10]]
+
+"""
+for deck in deck_list:
+    print (not Tie(deck) and (deBruijn(deck)))"""
+
+#potential = [10, 8, 2, 1, 13, 5, 6, 9, 12, 8, 10, 4, 3, 2, 7, 1, 11, 4, 10, 3, 7, 5, 12, 8, 6, 3, 7, 9, 4, 6, 11, 10, 13, 1, 5, 2, 7, 13, 12, 5, 1, 4, 3, 2, 9, 11, 13, 8, 6, 12, 11, 9, 10, 8]
+#print (not Tie(potential))
+#print ((deBruijn(potential)))
+#print (LMHCoding(potential))
+
+
+def check_valid(deck, card):
+    checking_list = []
+    if len(deck)<5:
+        checking_list = deck[0:len(deck)]
+    else:
+        checking_list = deck[len(deck)-4: len(deck)]
+    if card in checking_list:
+        return False
+    else:
+        return True
+
+
+def check_valid_when_insert_in_middle(deck, card, index: int):
+    # this will be used during construct_3 (final step)
+    checking_list = []
+    if index >=4 and index <= len(deck)-5:
+        checking_list = deck[index-4: index+4]
+    elif index < 4:
+        checking_list = deck[0:index+4]
+    else:
+        checking_list = deck[index-4: len(deck)]
+    if card in checking_list:
+        return False
+    else:
+        return True
+
+
+def add(lst, obj, index):
+    lst.insert(index, obj)
+
+
+def construct(original_deck):
+    new_deck = []
+    leftover = []
+    for card in original_deck:
+        if check_valid(new_deck, card):
+            new_deck.append(card)
+        else:
+            leftover.append(card)
+    construct_2(new_deck, leftover)
+    return new_deck
+
+
+def construct_2(Notiedeck, junkdeck):
+    another_junk = []
+    for card in junkdeck:
+        if check_valid(Notiedeck, card):
+            Notiedeck.append(card)
+        else:
+            another_junk.append(card)
+    construct_3(Notiedeck, another_junk)
+
+
+def construct_3(no_tie_big_deck, final_junk):
+    for card in final_junk:
+        for i in range(len(no_tie_big_deck)-1):
+            if check_valid_when_insert_in_middle(no_tie_big_deck, card, i):
+                add(no_tie_big_deck, card, i)
+                break
+            else:
+                pass
+
+
+for i in range (100000):
+    new_shuffled_deck = random.sample(test_deck, len(test_deck))
+    if (len(construct(new_shuffled_deck)) == 52 and not Tie(construct(new_shuffled_deck))):
+        pass
+    else:
+        print ("ooops")
+print ("We did it!!!!")
