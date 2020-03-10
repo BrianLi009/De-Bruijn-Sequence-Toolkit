@@ -49,10 +49,36 @@ def TopThree(cards):
     order=list(Order(cards))
     return order[-3:]
 
+def Nmaxelements(list1, N):
+    final_list = []
+
+    for i in range(0, N):
+        max1 = 0
+
+        for j in range(len(list1)):
+            if list1[j] > max1:
+                max1 = list1[j]
+
+        list1.remove(max1)
+        final_list.append(max1)
+    return final_list
+
 def LMHCoding(deck):
     for i in range(0,len(deck) - window_length + 1):
-        cards = list(deck[i:i+window_length])
-        print(str(cards) + " --> " + str(TopThree(cards)))
+        index_list = [0,0,0,0,0]
+        window_deck = deck[i:i+5]
+        non_change_deplicate = window_deck.copy()
+        """get index of the 1st largest, 2nd largest, 3rd largest card in
+        window = 5"""
+        top_3 = Nmaxelements(window_deck, 3)
+        for card in non_change_deplicate:
+            if card == top_3[0]:
+                index_list[non_change_deplicate.index(card)] = 1
+            elif card == top_3[1]:
+                index_list[non_change_deplicate.index(card)] = 2
+            elif card == top_3[2]:
+                index_list[non_change_deplicate.index(card)] = 3
+        print(index_list)
 
 def deBruijn(deck):
     deBruijn=True
