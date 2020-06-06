@@ -4,4 +4,6 @@ De Bruijn Generator: Generating De Bruijn Sequences for a 52 cards deck, with wi
 
 No Tie: Generating a sequence with no duplicates in a particular window length
 
-De Bruijn Grapher: Generate a directed graph for de Bruijn sequence with window length n, examples: https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/De_bruijn_graph-for_binary_sequence_of_order_4.svg/1024px-De_bruijn_graph-for_binary_sequence_of_order_4.svg.png
+De Bruijn Grapher: Generate a directed graph for de Bruijn sequence with window length n
+
+Reference: https://en.wikipedia.org/wiki/De_Bruijn_sequence
