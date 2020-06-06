@@ -1,0 +1,47 @@
+# Input window length, we should be able to genearate a graph assuming k=2
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+import itertools
+import functools
+
+def generate_node(n):
+    """This function inputs an alphabet with size 2 and window size n, and output all nodes in the de Bruijn graph"""
+    length = n-1
+    lst = list(itertools.product([0, 1], repeat=length))
+    return lst
+    
+def turn_tuple_to_str(tuple):
+    string = ''
+    for element in tuple:
+        string += str(element)
+    return string
+    
+def generate_graph(n):
+    """take in window size n and assume alphabet with 0,1, output a de Bruijn graph"""
+    node_lst = generate_node(n)
+    G = nx.DiGraph(directed=True)
+    edge_labels={}
+    for node1, node2 in itertools.combinations(node_lst, 2):
+        node1_copy = node1[1:]
+        node2_copy = node2[:n-2]
+        label1 = node2[n-2]
+        node1_copy2 = node1[:n-2]
+        node2_copy2 = node2[1:]
+        label2 = node1[n-2]
+        if node1_copy == node2_copy:
+            G.add_edge(turn_tuple_to_str(node1), turn_tuple_to_str(node2))
+            edge_labels[(turn_tuple_to_str(node1), turn_tuple_to_str(node2))]=label1
+        if node1_copy2 == node2_copy2:
+            G.add_edge(turn_tuple_to_str(node2), turn_tuple_to_str(node1))
+            edge_labels[(turn_tuple_to_str(node2), turn_tuple_to_str(node1))]=label2
+    options = {
+    'node_color': 'pink',
+    'node_size': 5000,
+    'width': 3,
+    'arrowstyle': '-|>',
+    'arrowsize': 30,
+}
+    pos = nx.shell_layout(G)
+    nx.draw(G, pos, with_labels=True, connectionstyle='arc3, rad = 0.1', **options)
+    nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels,label_pos=0.35, font_color='red')
